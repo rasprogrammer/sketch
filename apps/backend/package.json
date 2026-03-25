@@ -1,0 +1,26 @@
+{
+  "name": "backend",
+  "module": "index.ts",
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/bun": "latest",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "bun run src/server.ts",
+    "start:backend": "bun run src/server.ts"
+  },
+  "type": "module",
+  "dependencies": {
+    "@repo/database": "*",
+    "@repo/types": "*",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  }
+}

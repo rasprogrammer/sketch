@@ -1,0 +1,17 @@
+# Docker Compose configuration for local PostgreSQL database
+services:
+  postgres:
+    image: postgres:latest
+    container_name: sketch-database
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: sketch
+    ports:
+      - "5432:5432"
+    volumes:
+      - sketch-database-data:/var/lib/postgresql/data
+
+volumes:
+  sketch-database-data:
