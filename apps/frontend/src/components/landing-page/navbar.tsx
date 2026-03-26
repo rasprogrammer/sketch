@@ -1,4 +1,6 @@
 import { NavLink } from "@/data/navLink";
+import Link from "next/link";
+import siteMetadata from "@/lib/siteMetadata";
 
 
 export default function Navbar() {
@@ -7,14 +9,35 @@ export default function Navbar() {
             <ul className='hidden items-center gap-6 font-medium text-gray-700 md:flex'>
                 {NavLink.map((link, index) => (
                     <li key={index}>
+                        <a
+                        href={link.href}
+                        className='hover:text-primary-chubb text-base transition'
+                        >
+                        {link.title}
+                        </a>
+                    </li>
+                ))}
+
+                <li>
                     <a
-                    href={link.href}
-                    className='hover:text-primary-chubb text-base transition'
+                        href={siteMetadata.github}
+                        target='_blank'
+                        className='hover:text-primary-chubb text-base transition'
                     >
-                    {link.title}
+                        Github
                     </a>
                 </li>
-                ))}
+
+                
+                <li>
+                    <Link
+                        href='/signin'
+                        scroll={false}
+                        className='hover:bg-primary bg-primary-darker rounded-lg border-2 border-gray-200 px-6 py-2 font-bold tracking-wider text-base transition'
+                    >
+                        Sign In
+                    </Link>
+                </li>
             </ul>
         </nav>
     )
