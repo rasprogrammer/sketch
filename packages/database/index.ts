@@ -5,3 +5,10 @@ export {
     getUserById,
     createUser
 };
+
+import { createRoom, getRoomByName } from "./src/roomService";
+
+export {
+    createRoom,
+    getRoomByName
+}
