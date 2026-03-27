@@ -37,7 +37,11 @@ export const signup = async (req: Request, res: Response) => {
         res.status(HttpStatus.CREATED).json({
             success: true,
             message: "User created successfully",
-            user: newUser
+            user: {
+                id: newUser.id,
+                name: newUser.name,
+                email: newUser.email
+            }
         });
 
     } catch (error) {
@@ -72,7 +76,7 @@ export const signin = async (req: Request, res: Response) => {
             return;
         }
 
-        console.log(user);
+        // console.log(user);
 
         // Compare passwords
         const isPasswordValid = await verifyPassword(password, user.password);

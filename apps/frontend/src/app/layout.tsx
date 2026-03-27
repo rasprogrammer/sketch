@@ -3,6 +3,7 @@ import "./globals.css";
 
 import siteMetadata from "@/lib/siteMetadata"
 import ReactQueryProvider from "@/lib/react-query";
+import { Toaster } from "react-hot-toast";
 
 
 export const metadata: Metadata = {
@@ -49,6 +50,10 @@ export default function RootLayout({
     <html>
       <body>
         <ReactQueryProvider>
+          <Toaster
+            position="top-right"
+            reverseOrder={false}
+          />
           {children}
         </ReactQueryProvider>
       </body>

@@ -36,6 +36,7 @@
       "name": "frontend",
       "version": "0.1.0",
       "dependencies": {
+        "@repo/types": "*",
         "@tanstack/react-query": "^5.95.2",
         "axios": "^1.13.6",
         "lucide-react": "^1.7.0",

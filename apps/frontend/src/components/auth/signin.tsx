@@ -8,9 +8,12 @@ import Animation from "@/components/animation";
 import { Input, InputPassword } from "@/components/forms/input";
 import { Button } from "../forms/button";
 import { HashLoader } from "react-spinners";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { signinUser } from "@/api/auth";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { SigninSchema } from "@repo/types";
 
 
 export default function Signin () {
@@ -22,25 +25,41 @@ export default function Signin () {
         general?: string;
     }>({});
 
+    const route = useRouter();
+
     
     const signinMutation = useMutation({
         mutationFn: signinUser,
         onSuccess: data => {
             console.log('login success!');
-            // toast.success('User Signed in Successfully');
-            // localStorage.setItem('token', `Bearer ${data.token}`);
-            // route.push('./dashboard');
+            toast.success('User Signed in Successfully');
+            localStorage.setItem('token', `Bearer ${data.token}`);
+            route.push('./dashboard');
         },
         onError: err => {
-            setEmail('');
-            setPassword('');
+            // setEmail('');
+            // setPassword('');
             console.log('login failed');
-            // toast.error(err.message);
+            toast.error(err.message);
         },
   });
 
-    const handleSignin = () => {
-        
+    const handleSignin = (e : React.FormEvent) => {
+        e.preventDefault();
+
+        const result = SigninSchema.safeParse({email, password});
+        if (!result.success) {
+            const formattedErrors = result.error.format();
+            setErrors({
+                email: formattedErrors.email?._errors[0],
+                password: formattedErrors.password?._errors[0]
+            });
+            return;
+        }
+
+        setErrors({});
+
+        signinMutation.mutate({email, password});
     }
 
     return (

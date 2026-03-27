@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import React, { useState } from "react";
 import Animation from "../animation";
 import Link from "next/link";
 import { X } from "lucide-react";
@@ -10,7 +10,9 @@ import { Input, InputPassword } from "../forms/input";
 import { Button } from "../forms/button";
 import { HashLoader } from "react-spinners";
 import { useMutation } from "@tanstack/react-query";
-import { signinUser } from "@/api/auth";
+import { signupUser } from "@/api/auth";
+import { CreateUserSchema } from "@repo/types";
+import toast from "react-hot-toast";
 
 
 export default function Signup() {
@@ -26,17 +28,37 @@ export default function Signup() {
     const route = useRouter();
 
     const signupMutation = useMutation({
-        mutationFn: signinUser,
+        mutationFn: signupUser,
         onSuccess: () => {
-
+            toast.success('User Signed up Successfully');
+            route.push('/signin');
         },
-        onError: () => {
-
+        onError: (err) => {
+            setEmail('');
+            setPassword('');
+            setName('');
+            toast.error(err.message);
         }
     })
 
-    const handleSignup = () => {
+    const handleSignup = async (e : React.FormEvent) => {
+        e.preventDefault();
 
+        const result = CreateUserSchema.safeParse({email, password, name});
+        if (!result.success) {
+            const formattedErrors = result.error.format();
+            
+            setErrors({
+                name: formattedErrors.name?._errors[0],  
+                email: formattedErrors.email?._errors[0],
+                password: formattedErrors.password?._errors[0],
+            })
+            return;
+        }
+
+        setErrors({});
+
+        signupMutation.mutate({email, name, password});
     }
 
     
