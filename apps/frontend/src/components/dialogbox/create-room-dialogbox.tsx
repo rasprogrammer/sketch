@@ -80,7 +80,7 @@ const CreateRoomDialogBox = ({ onClose }: CreateRoomDialogBoxProps) => {
             Cancel
           </button>
           <button
-            className='bg-primary-darker hover:bg-primary-chubb cursor-pointer rounded-lg px-4 py-2 text-white transition'
+            className='bg-primary-darker hover:bg-primary-chubb cursor-pointer rounded-lg px-4 py-2 text-base transition'
             onClick={handleCreateRoom}
           >
             Create Room

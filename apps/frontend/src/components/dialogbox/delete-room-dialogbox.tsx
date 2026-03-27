@@ -70,7 +70,7 @@ const DeleteRoomDialogBox = ({ onClose, roomId }: DeleteRoomDialogBoxProps) => {
             Cancel
           </button>
           <button
-            className='cursor-pointer rounded-lg bg-red-500 px-4 py-2 text-white transition hover:bg-red-400 disabled:bg-red-300'
+            className='cursor-pointer rounded-lg bg-red-500 px-4 py-2 text-base transition hover:bg-red-400 disabled:bg-red-300'
             onClick={handleDelete}
           >
             Delete Room

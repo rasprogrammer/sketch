@@ -86,7 +86,8 @@ export const joinRoom = async (req: AuthRequest, res: Response) => {
         
         return res.status(HttpStatus.OK).json({
             success: true,
-            message: "Joined room successful"
+            message: "Joined room successful",
+            roomId
         });
         
     } catch (error) {
