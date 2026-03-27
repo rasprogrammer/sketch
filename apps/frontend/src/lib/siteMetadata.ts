@@ -16,7 +16,7 @@ const siteMetadata = {
     siteUrl: envSiteUrl,
     language: "en-US",
     locale: "en-US",
-    socialBanner: "",
+    socialBanner: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_O_reM2MOwAztBM9ffXdP4R0vz5jNBhHhTg&s",
 
     github: "",
     linkedIn: "",
