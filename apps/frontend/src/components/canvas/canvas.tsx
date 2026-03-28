@@ -14,11 +14,11 @@ export default function Canvas({roomId} : {
     const sendMessage: string = "Canvas Header -- ";
 
     return (
-        <>
-            <CanvasHeader roomId={roomId} sendMessage={sendMessage} />
-            <CanvasSidebar selectedTool={selectedTool} />
+        <>            
+            {/* <CanvasHeader roomId={roomId} sendMessage={sendMessage} /> */}
+            {/* <CanvasSidebar selectedTool={selectedTool} /> */}
             {/* <h2>Canvas ${roomId} </h2> */}
-            <CanvasFooter />
+            {/* <CanvasFooter /> */}
         </>
     )
 }
