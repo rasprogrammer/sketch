@@ -17,8 +17,8 @@ export default function Canvas({roomId} : {
         <>
             <CanvasHeader roomId={roomId} sendMessage={sendMessage} />
             <CanvasSidebar selectedTool={selectedTool} />
-            {/* <h2>Canvas ${roomId} </h2>
-            <CanvasFooter /> */}
+            {/* <h2>Canvas ${roomId} </h2> */}
+            <CanvasFooter />
         </>
     )
 }
