@@ -3,7 +3,7 @@ import { LogOut } from "lucide-react";
 
 export default function LogoutButton({roomId}: {
     roomId: string;
-    sendMessage: string;
+    sendMessage: (message: any) => void;
 }) {
 
     const handleLeaveClick = () => {

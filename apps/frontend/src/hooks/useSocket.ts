@@ -36,6 +36,9 @@ export const useSocket = ({
   onOpen?: () => void;
   onClose?: () => void;
 }) => {
+
+  console.log('useSocket called');
+
   const socketRef = useRef<WebSocket | null>(null);
   const connectingRef = useRef<boolean>(false);
   const retryCount = useRef<number>(0);
@@ -57,6 +60,7 @@ export const useSocket = ({
   // Send a message to the server
   const sendMessage = useCallback((message: CanvasMessage) => {
     const socket = socketRef.current || globalSocket;
+    console.log('socket > ', socket);
     if (socket && socket.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify(message));
     } else {

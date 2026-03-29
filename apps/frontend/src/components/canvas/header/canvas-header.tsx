@@ -5,7 +5,7 @@ import Toolbar from "../toolbar/toolbar";
 
 export default function CanvasHeader({roomId, sendMessage}: {
     roomId: string;
-    sendMessage: string;
+    sendMessage: (message: any) => void;
 }) {
     return (
         <>

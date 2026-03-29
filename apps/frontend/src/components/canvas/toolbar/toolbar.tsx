@@ -17,10 +17,9 @@ const tools: { icon: LucideIcon; tool: Tool; id: number; tooltip: string }[] = [
 ];
 
 
-
 export default function Toolbar({roomId, sendMessage}: {
     roomId: string;
-    sendMessage: string;
+    sendMessage: (message: any) => void;
 }) {
 
 
