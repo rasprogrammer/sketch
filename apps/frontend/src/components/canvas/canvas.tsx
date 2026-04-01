@@ -10,12 +10,20 @@ import { useEffect, useState } from "react";
 export default function Canvas({roomId} : {
     roomId: string;
 }) {
-    const [token, setToken] = useState<string | null>(null);
+    
+    const [token, setToken] = useState<string | null>(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('token')?.split(' ')[1] || null;
+        }
+        return null;
+    });
 
     useEffect(() => {
-        const storedItem = localStorage.getItem('token')?.split(' ')[1];
-        if (storedItem) {
-            setToken(storedItem);
+        if (typeof window !== 'undefined') {
+            const storedData = localStorage.getItem('token')?.split(' ')[1];
+            if (storedData) {
+                setToken(storedData);
+            }
         }
     }, []);
 

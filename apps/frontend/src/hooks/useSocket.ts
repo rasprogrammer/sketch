@@ -37,7 +37,7 @@ export const useSocket = ({
   onClose?: () => void;
 }) => {
 
-  console.log('useSocket called');
+  // console.log('useSocket called');
 
   const socketRef = useRef<WebSocket | null>(null);
   const connectingRef = useRef<boolean>(false);
@@ -193,7 +193,7 @@ export const useSocket = ({
     componentMountedRef.current = true;
 
     if (!token) {
-      console.error('No token provided. Skipping WebSocket connection.');
+      // console.error('No token provided. Skipping WebSocket connection.');
       return;
     }
 
