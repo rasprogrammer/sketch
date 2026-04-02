@@ -6,9 +6,8 @@ import { authenticateWebsocket } from "../services/auth";
 
 
 export const setupWebSocketServer = (wss: WebSocketServer) => {
+    
     wss.on('connection', (socket, request) => {
-        console.log('request url > ', request.url);
-
         const url = request.url;
         if (!url) {
             logger.error('Connection request missing URL');
@@ -32,15 +31,32 @@ export const setupWebSocketServer = (wss: WebSocketServer) => {
         socket.on('message', (data) => {
             try {
                 const message = JSON.parse(data.toString());
+
+                switch (message.type) {
+                    case "room:join":
+                    case "room:leave":
+                        // handleRoomEvent
+                        break;
+                    case "canvas:draw":
+                    case "canvas:clear":
+                    case "canvas:erase":
+                    case "canvas:update":
+                        // handleCanvasEvent
+                        break;
+                    
+                    default: 
+                        logger.warn(`Unknown message type received: ${message.type}`);
+                }
                 
             } catch (error) {
-
+                logger.error("Invalid message format", error);
             }
         });
 
         // Handle disconnetion 
         socket.on('close', () => {
             logger.info(`User ${userId} disconnected`);
+            // handleUserDisconnect
         });
 
     });
