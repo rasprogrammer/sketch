@@ -17,6 +17,7 @@
   "dependencies": {
     "@repo/backend-common": "*",
     "@repo/database": "*",
+    "@repo/types": "*",
     "chalk": "^5.6.2",
     "ws": "^8.20.0"
   }

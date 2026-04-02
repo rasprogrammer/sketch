@@ -12,3 +12,22 @@ export {
     createRoom,
     getRoomByName
 }
+
+
+import {
+  createCanvas,
+  deleteUserCanvasInRoom,
+  getRoomCanvas,
+  getCanvasShape,
+  deleteCanvasShape,
+  updateCanvasShape,
+} from "./src/canvasService";
+
+export {
+  deleteUserCanvasInRoom,
+  getRoomCanvas,
+  createCanvas,
+  getCanvasShape,
+  deleteCanvasShape,
+  updateCanvasShape,
+};

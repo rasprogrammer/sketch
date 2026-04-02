@@ -3,10 +3,11 @@ import { logger } from "../utils/logger";
 import { PORT } from "../config";
 import { getToken } from "../services/getToken";
 import { authenticateWebsocket } from "../services/auth";
+import { handleRoomEvent } from "./roomHandler";
 
 
 export const setupWebSocketServer = (wss: WebSocketServer) => {
-    
+
     wss.on('connection', (socket, request) => {
         const url = request.url;
         if (!url) {
@@ -35,7 +36,7 @@ export const setupWebSocketServer = (wss: WebSocketServer) => {
                 switch (message.type) {
                     case "room:join":
                     case "room:leave":
-                        // handleRoomEvent
+                        handleRoomEvent(socket, message, userId);
                         break;
                     case "canvas:draw":
                     case "canvas:clear":
