@@ -79,6 +79,7 @@ export const useSocket = ({
     }
 
     // If we already have a global socket for this room, use it
+    /*
     if (
       globalSocket &&
       globalSocket.readyState === WebSocket.OPEN &&
@@ -94,6 +95,7 @@ export const useSocket = ({
         return;
       }
     }
+    */
 
     connectingRef.current = true;
 

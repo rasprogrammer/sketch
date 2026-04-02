@@ -8,13 +8,15 @@
     "start:websocket": "bun run src/server.ts"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/ws": "^8.18.1"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
-    "@types/ws": "^8.18.1",
+    "@repo/backend-common": "*",
+    "@repo/database": "*",
     "chalk": "^5.6.2",
     "ws": "^8.20.0"
   }
