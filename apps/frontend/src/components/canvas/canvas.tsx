@@ -18,15 +18,6 @@ export default function Canvas({roomId} : {
         return null;
     });
 
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const storedData = localStorage.getItem('token')?.split(' ')[1];
-            if (storedData) {
-                setToken(storedData);
-            }
-        }
-    }, []);
-
     const selectedTool: Tool = 'Selection';
     
     const { sendMessage } = useSocket({
