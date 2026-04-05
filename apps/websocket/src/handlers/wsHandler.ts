@@ -3,7 +3,8 @@ import { logger } from "../utils/logger";
 import { PORT } from "../config";
 import { getToken } from "../services/getToken";
 import { authenticateWebsocket } from "../services/auth";
-import { handleRoomEvent } from "./roomHandler";
+import { handleRoomEvent, handleUserDisconnect } from "./roomHandler";
+import { handleCanvasEvent } from "./canvasHandler";
 
 
 export const setupWebSocketServer = (wss: WebSocketServer) => {
@@ -42,7 +43,7 @@ export const setupWebSocketServer = (wss: WebSocketServer) => {
                     case "canvas:clear":
                     case "canvas:erase":
                     case "canvas:update":
-                        // handleCanvasEvent
+                        handleCanvasEvent(socket, message, userId);
                         break;
                     
                     default: 
@@ -57,7 +58,7 @@ export const setupWebSocketServer = (wss: WebSocketServer) => {
         // Handle disconnetion 
         socket.on('close', () => {
             logger.info(`User ${userId} disconnected`);
-            // handleUserDisconnect
+            handleUserDisconnect(socket, userId);
         });
 
     });
