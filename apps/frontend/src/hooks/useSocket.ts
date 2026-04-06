@@ -5,15 +5,15 @@ import { WS_URL } from '@/config';
 export type CanvasMessage =
   | { type: 'room:join' | 'room:leave'; room: string }
   | {
-      type: 'canvas:draw' | 'canvas:update';
-      room: string;
-      data: Shape;
-    }
+    type: 'canvas:draw' | 'canvas:update';
+    room: string;
+    data: Shape;
+  }
   | {
-      type: 'canvas:erase';
-      room: string;
-      shapeId: string;
-    }
+    type: 'canvas:erase';
+    room: string;
+    shapeId: string;
+  }
   | { type: 'canvas:clear'; room: string };
 
 export type EventCallback = (message: IncomingMessage) => void;
@@ -36,9 +36,6 @@ export const useSocket = ({
   onOpen?: () => void;
   onClose?: () => void;
 }) => {
-
-  // console.log('useSocket called');
-
   const socketRef = useRef<WebSocket | null>(null);
   const connectingRef = useRef<boolean>(false);
   const retryCount = useRef<number>(0);
@@ -60,7 +57,6 @@ export const useSocket = ({
   // Send a message to the server
   const sendMessage = useCallback((message: CanvasMessage) => {
     const socket = socketRef.current || globalSocket;
-    console.log('socket > ', socket);
     if (socket && socket.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify(message));
     } else {
@@ -79,7 +75,6 @@ export const useSocket = ({
     }
 
     // If we already have a global socket for this room, use it
-    /*
     if (
       globalSocket &&
       globalSocket.readyState === WebSocket.OPEN &&
@@ -95,7 +90,6 @@ export const useSocket = ({
         return;
       }
     }
-    */
 
     connectingRef.current = true;
 
@@ -195,7 +189,7 @@ export const useSocket = ({
     componentMountedRef.current = true;
 
     if (!token) {
-      // console.error('No token provided. Skipping WebSocket connection.');
+      console.error('No token provided. Skipping WebSocket connection.');
       return;
     }
 

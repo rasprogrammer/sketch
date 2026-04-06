@@ -5,13 +5,17 @@ import CanvasFooter from "./footer/canvas-footer";
 import CanvasHeader from "./header/canvas-header";
 import CanvasSidebar from "./sidebar/canvas-sidebar";
 import { useSocket } from "@/hooks/useSocket";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
+import { CanvasEngine } from "@/canvas-engine/CanvasEngine";
 
 export default function Canvas({roomId} : {
     roomId: string;
 }) {
-    
-    const [token, setToken] = useState<string | null>(() => {
+
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    const [ canvasEngine, setCanvasEngine ] = useState(null);
+    const [token] = useState<string | null>(() => {
         if (typeof window !== 'undefined') {
             return localStorage.getItem('token')?.split(' ')[1] || null;
         }
@@ -26,7 +30,40 @@ export default function Canvas({roomId} : {
         onMessage: () => {},
         onOpen: () => console.log('connected'),
         onClose: () => console.log('disconnected')
-    })
+    });
+
+    // Initialize canvas and controllers
+    useEffect(() => {
+        if (!token) {
+            toast.error('Unauthorized access');
+            return;
+        }
+
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const handleSendMessage = (message: any) => {
+            sendMessage(message);
+        };
+
+        const draw = new CanvasEngine(canvas, roomId, handleSendMessage);
+        // setCanvasEngine(draw);
+            
+        // Mouse event handlers with optimized state updates
+        const handleMouseEvent = () => {
+            
+        };
+
+        canvas.addEventListener('mousedown', handleMouseEvent);
+        canvas.addEventListener('mouseup', handleMouseEvent);
+
+        return () => {
+            draw.destroy();
+            canvas.removeEventListener('mousedown', handleMouseEvent);
+            canvas.removeEventListener('mouseup', handleMouseEvent);
+        };
+
+    }, [token, roomId, sendMessage, setCanvasEngine]);
 
     return (
         <>            
