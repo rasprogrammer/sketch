@@ -8,13 +8,28 @@ import { useSocket } from "@/hooks/useSocket";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { CanvasEngine } from "@/canvas-engine/CanvasEngine";
+import { useCanvasEngineStore } from "@/stores/canvas-store";
+
+
+const cursorStyles = {
+  Eraser: 'none',
+  Freehand: 'crosshair',
+  Text: 'text',
+  Selection: 'pointer',
+  Rectangle: 'crosshair',
+  Diamond: 'crosshair',
+  Ellipse: 'crosshair',
+  Arrow: 'default',
+  Line: 'crosshair',
+  default: 'crosshair',
+};
 
 export default function Canvas({roomId} : {
     roomId: string;
 }) {
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    const [ canvasEngine, setCanvasEngine ] = useState(null);
+    const { canvasEngine, setCanvasEngine } = useCanvasEngineStore();
     const [token] = useState<string | null>(() => {
         if (typeof window !== 'undefined') {
             return localStorage.getItem('token')?.split(' ')[1] || null;
@@ -47,7 +62,7 @@ export default function Canvas({roomId} : {
         };
 
         const draw = new CanvasEngine(canvas, roomId, handleSendMessage);
-        // setCanvasEngine(draw);
+        setCanvasEngine(draw);
             
         // Mouse event handlers with optimized state updates
         const handleMouseEvent = () => {
