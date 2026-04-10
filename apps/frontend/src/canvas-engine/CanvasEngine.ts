@@ -1,4 +1,4 @@
-import { CanvasMessage, Shape, ShapeOptions } from "@repo/types";
+import { CanvasMessage, Shape, ShapeOptions, Tool } from "@repo/types";
 import rough from "roughjs";
 import { RoughCanvas } from "roughjs/bin/canvas";
 import { RoughGenerator } from "roughjs/bin/generator";
@@ -20,6 +20,8 @@ export class CanvasEngine {
     private textInput: HTMLInputElement | null = null;
 
     private roomId: string;
+
+    private selectedTool: Tool = 'Selection';
     
     // Stroke style configurations
     private strokeStyles = {
@@ -356,5 +358,25 @@ export class CanvasEngine {
             return this.generator.rectangle(0, 0, 0, 0, options); // Fallback
         }
     }
+
+    
+    /**
+     * Sets the current drawing tool
+     */
+    public setSelectedTool(tool: Tool) {
+        this.selectedTool = tool;
+
+        // When switching to Selection tool, maintain current selection
+        // When switching to other tools, clear selection
+        if (tool !== 'Selection') {
+        this.selectionManager.setSelectedShape(null);
+        this.clearCanvas();
+        }
+    }
+
+    public getSelectedTool() {
+        return this.selectedTool;
+    }
+
 
 }

@@ -9,6 +9,8 @@ import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { CanvasEngine } from "@/canvas-engine/CanvasEngine";
 import { useCanvasEngineStore } from "@/stores/canvas-store";
+import { useToolStore } from "@/stores/tool-store";
+import { useCanvasStyleStore } from "@/stores/canvas-style-store";
 
 
 const cursorStyles = {
@@ -36,13 +38,27 @@ export default function Canvas({roomId} : {
         }
         return null;
     });
+    
+    // Canvas style properties - moved before conditional checks
+    const {
+        strokeColor,
+        backgroundColor,
+        strokeWidth,
+        strokeStyle,
+        roughness,
+        fillStyle,
+    } = useCanvasStyleStore();
 
-    const selectedTool: Tool = 'Selection';
+    const selectedTool = useToolStore(s => s.selectedTool);
+
+    const handleOnMessage = () => {
+
+    }
     
     const { sendMessage } = useSocket({
         roomId,
         token: token || '',
-        onMessage: () => {},
+        onMessage: () => handleOnMessage,
         onOpen: () => console.log('connected'),
         onClose: () => console.log('disconnected')
     });
@@ -79,6 +95,43 @@ export default function Canvas({roomId} : {
         };
 
     }, [token, roomId, sendMessage, setCanvasEngine]);
+
+    // Update selected tool
+    useEffect(() => {
+        if (!canvasEngine) return;
+
+        const currentTool = canvasEngine.getSelectedTool();
+        if (currentTool !== selectedTool) {
+            canvasEngine.setSelectedTool(selectedTool);
+        }
+    }, [canvasEngine, selectedTool]);
+
+    // Canvas sizing
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const handleResize = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            if (!canvasEngine) return;
+            canvasEngine.clearCanvas();
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    
+    // Cursor style
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (canvas) {
+            canvas.style.cursor = cursorStyles[selectedTool] || cursorStyles.default;
+        }
+    }, [selectedTool]);
+
 
     return (
         <>            
