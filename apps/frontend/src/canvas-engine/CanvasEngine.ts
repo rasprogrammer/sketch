@@ -7,6 +7,7 @@ import { Eraser } from "./Eraser";
 import { getExistingShapes } from "@/api/canvas";
 import { getStroke } from 'perfect-freehand';
 import { Drawable } from "roughjs/bin/core";
+import cuid from "cuid";
 
 export class CanvasEngine {
     private canvas: HTMLCanvasElement;
@@ -23,6 +24,8 @@ export class CanvasEngine {
 
     private selectedTool: Tool = 'Selection';
     
+    private isTextInputActive: boolean = false;
+    
     // Stroke style configurations
     private strokeStyles = {
         solid: [],
@@ -31,11 +34,7 @@ export class CanvasEngine {
     };
 
     // Roughness levels for hand-drawn style
-    private roughnessLevels = {
-        none: 0,
-        normal: 1,
-        high: 2,
-    };
+    private roughnessLevels = { none: 0, normal: 1, high: 2, };
 
     // Stroke width options
     private strokeWidths = {
@@ -44,9 +43,23 @@ export class CanvasEngine {
         thick: 4,
     };
 
+    private roughness: 'none' | 'normal' | 'high' = 'none';
+    private strokeStyle: 'solid' | 'dashed' | 'dotted' = 'solid';
+    private strokeWidth: 'thin' | 'medium' | 'thick' = 'thin';
+    private fillStyle: 'hachure' | 'solid' | 'cross-hatch' = 'hachure';
+    private fillColor: string = 'transparent';
+    private strokeColor: string = 'black';
+    private seed = 42;
+
     private selectionManager: SelectionManager;
 
     private eraser: Eraser | null = null;
+
+    // Drawing coordinates
+    private x1: number = 0;
+    private x2: number = 0;
+    private y1: number = 0;
+    private y2: number = 0;
 
     constructor(
         canvas: HTMLCanvasElement,
@@ -70,16 +83,30 @@ export class CanvasEngine {
         this.eraser = new Eraser(this.context, this.existingShapes);
 
         this.init().then(() => this.initHandlers());
+        console.log('init');
     }
 
     private async init() {
-        const shapes: Shape[] = await getExistingShapes(this.roomId);
-        this.existingShapes = Array.isArray(shapes) ? shapes : [];
-        this.clearCanvas();
+        try {
+            console.log('init started');
+
+            const shapes: Shape[] = await getExistingShapes(this.roomId);
+
+            console.log('shapes fetched', shapes);
+
+            this.existingShapes = Array.isArray(shapes) ? shapes : [];
+
+            this.clearCanvas();
+
+            console.log('init finished');
+        } catch (err) {
+            console.error('init failed:', err);
+        }
     }
 
     
     private initHandlers() {
+        console.log('hiii');
         this.canvas.addEventListener('pointerdown', this.pointerDownHandler);
         this.canvas.addEventListener('pointermove', this.pointerMoveHandler);
         this.canvas.addEventListener('pointerup', this.pointerUpHandler);
@@ -110,7 +137,18 @@ export class CanvasEngine {
         }
     };
 
-    
+    private getShapeOptions(): ShapeOptions {
+        return {
+        roughness: this.roughness,
+        strokeStyle: this.strokeStyle,
+        strokeWidth: this.strokeWidth,
+        fillStyle: this.fillStyle,
+        fillColor: this.fillColor,
+        strokeColor: this.strokeColor,
+        seed: this.seed,
+        };
+    }
+
     private deleteSelectedShape() {
         const selectedShape = this.selectionManager.getSelectedShape();
         if (selectedShape) {
@@ -262,7 +300,27 @@ export class CanvasEngine {
     }
 
     private pointerDownHandler = (event: PointerEvent) => { 
+        const rect = this.canvas.getBoundingClientRect();
+        this.x1 = event.clientX - rect.left;
+        this.y1 = event.clientY - rect.top;
 
+        if (this.selectedTool === 'Text') {
+            console.log('you are in text down event');
+            this.startTextInput(event.clientX, event.clientY);
+            return;
+        }
+
+        if (this.selectedTool === 'Eraser') {
+            
+        }
+        
+        if (this.selectedTool === 'Freehand') {
+            
+        }
+        
+        if (this.selectedTool === 'Selection') {
+            
+        }
     }
     
     private pointerMoveHandler = (event: PointerEvent) => {
@@ -272,6 +330,136 @@ export class CanvasEngine {
     private pointerUpHandler = (event: PointerEvent) => {
 
     }
+    
+    private cleanupTextInput() {
+        if (!this.textInput) return;
+
+        // Store the reference to the text input
+        const textInput = this.textInput;
+
+        // Reset the state variables first
+        this.textInput = null;
+        this.isTextInputActive = false;
+
+        // Then try to remove the element if it still exists
+        try {
+            if (textInput.parentNode) {
+                textInput.remove();
+            }
+        } catch (error) {
+            console.warn('Error during text input cleanup:', error);
+        }
+    }
+    
+    private finishTextInput(textInput: HTMLInputElement) {
+        // Only proceed if this is still the current text input
+        if (textInput !== this.textInput) return;
+
+        const text = textInput.value.trim();
+        if (text) {
+            const rect = textInput.getBoundingClientRect();
+            const canvasRect = this.canvas.getBoundingClientRect();
+
+            // Measure text width for more accurate sizing
+            this.context.save();
+            this.context.font = '32px Comic Sans MS, cursive';
+            const textWidth = this.context.measureText(text).width;
+            this.context.restore();
+
+            const newShape: Shape = {
+                id: cuid(),
+                type: 'Text',
+                x1: rect.left - canvasRect.left,
+                y1: rect.top - canvasRect.top,
+                x2: rect.left - canvasRect.left + textWidth,
+                y2: rect.bottom - canvasRect.top,
+                text: text,
+                options: this.getShapeOptions(),
+            };
+
+            this.existingShapes.push(newShape);
+            this.sendMessage({
+                type: 'canvas:draw',
+                room: this.roomId,
+                data: newShape,
+            });
+        }
+
+        this.cleanupTextInput();
+        this.clearCanvas();
+    }
+
+
+    
+    private startTextInput(x: number, y: number) {
+        // First, ensure any existing text input is properly cleaned up
+        this.cleanupTextInput();
+
+        // const rect =
+        this.canvas.getBoundingClientRect();
+        // const canvasX = x - rect.left;
+        // const canvasY = y - rect.top;
+
+        // Create new text input
+        const textInput = document.createElement('input');
+        textInput.type = 'text';
+        textInput.style.position = 'absolute';
+        textInput.style.left = `${x}px`;
+        textInput.style.top = `${y}px`;
+        textInput.style.fontFamily = 'Comic Sans MS, cursive';
+        textInput.style.fontSize = '32px';
+        textInput.style.background = 'transparent';
+        textInput.style.border = 'none';
+        textInput.style.outline = 'none';
+        textInput.style.color = this.strokeColor;
+        textInput.style.padding = '4px 4px';
+        textInput.style.margin = '0';
+        textInput.style.width = 'auto';
+        textInput.style.minWidth = '50px';
+        textInput.style.zIndex = '1000';
+        textInput.style.cursor = 'text';
+        textInput.style.borderRadius = '4px';
+        textInput.style.transition = 'background-color 0.2s';
+
+        // Add to canvas container first
+        const canvasContainer = this.canvas.parentElement;
+        if (!canvasContainer) return;
+
+        canvasContainer.appendChild(textInput);
+        this.textInput = textInput;
+        this.isTextInputActive = true;
+
+        // Add event listeners after the element is in the DOM
+        const handleBlur = () => {
+        if (textInput === this.textInput) {
+            this.finishTextInput(textInput);
+        }
+        };
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if (textInput === this.textInput) {
+            this.finishTextInput(textInput);
+            }
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            this.cleanupTextInput();
+            this.clearCanvas();
+        }
+        };
+
+        textInput.addEventListener('blur', handleBlur);
+        textInput.addEventListener('keydown', handleKeyDown);
+
+        // Focus after a small delay
+        setTimeout(() => {
+        if (textInput === this.textInput && textInput.parentNode) {
+            textInput.focus();
+        }
+        }, 0);
+    }
+
 
     private generateDrawableFromShapeData(
         shape: Shape,
@@ -377,6 +565,12 @@ export class CanvasEngine {
     public getSelectedTool() {
         return this.selectedTool;
     }
+
+    
+    public getSelectedShape(): Shape | null {
+        return this.selectionManager.getSelectedShape();
+    }
+
 
 
 }

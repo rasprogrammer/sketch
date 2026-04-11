@@ -11,6 +11,7 @@ import { CanvasEngine } from "@/canvas-engine/CanvasEngine";
 import { useCanvasEngineStore } from "@/stores/canvas-store";
 import { useToolStore } from "@/stores/tool-store";
 import { useCanvasStyleStore } from "@/stores/canvas-style-store";
+import { useIsShapeSelectedStore } from "@/stores/shape-selected-store";
 
 
 const cursorStyles = {
@@ -82,7 +83,13 @@ export default function Canvas({roomId} : {
             
         // Mouse event handlers with optimized state updates
         const handleMouseEvent = () => {
-            
+            const currentSelection = draw.getSelectedShape();
+            const isSelected = !!currentSelection;
+            const currentState = useIsShapeSelectedStore.getState().isShapeSelected;
+            console.log('currentState > ', currentState, ' isSelected > ', isSelected);
+            if (isSelected !== currentState) {
+                useIsShapeSelectedStore.setState({ isShapeSelected: isSelected });
+            }
         };
 
         canvas.addEventListener('mousedown', handleMouseEvent);
@@ -127,6 +134,7 @@ export default function Canvas({roomId} : {
     // Cursor style
     useEffect(() => {
         const canvas = canvasRef.current;
+        console.log('canvas > ', canvas);
         if (canvas) {
             canvas.style.cursor = cursorStyles[selectedTool] || cursorStyles.default;
         }
@@ -137,7 +145,7 @@ export default function Canvas({roomId} : {
         <>            
             <CanvasHeader roomId={roomId} sendMessage={sendMessage} />
             <CanvasSidebar selectedTool={selectedTool} />
-            {/* <h2>Canvas ${roomId} </h2> */}
+            <canvas ref={canvasRef} className='bg-[#f6f6f6] text-white' />
             <CanvasFooter />
         </>
     )

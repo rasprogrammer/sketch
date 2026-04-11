@@ -3,6 +3,8 @@ import { useState } from "react";
 import Tooltip from "./tooltip";
 import { Tool } from "@/type/tool";
 import ToolbarButton from "./toolbar-button";
+import { useToolStore } from "@/stores/tool-store";
+import { useCanvasEngineStore } from "@/stores/canvas-store";
 
 const tools: { icon: LucideIcon; tool: Tool; id: number; tooltip: string }[] = [
   { icon: MousePointer, tool: 'Selection', id: 1, tooltip: 'Selection - 1' },
@@ -24,13 +26,15 @@ export default function Toolbar({roomId, sendMessage}: {
 
 
     const [isLocked, setIsLocked] = useState(false);
-    const [selectedTool, setSelectedTool] = useState({});
+    const { selectedTool, setSelectedTool } = useToolStore();
+    const { canvasEngine } = useCanvasEngineStore();
 
     const toggleLock = () => {
         setIsLocked(prev => !prev);
     }
 
     const handleToolSelect = (tool: Tool) => {
+        console.log('selected tool : ', tool);
         setSelectedTool(tool)
     }
 
