@@ -53,13 +53,15 @@ export class CanvasEngine {
 
     private selectionManager: SelectionManager;
 
-    private eraser: Eraser | null = null;
-
     // Drawing coordinates
     private x1: number = 0;
     private x2: number = 0;
     private y1: number = 0;
     private y2: number = 0;
+
+    private eraser: Eraser | null = null;
+    private isErasing: boolean = false;
+    private eraserSize: number = 10;
 
     constructor(
         canvas: HTMLCanvasElement,
@@ -81,6 +83,7 @@ export class CanvasEngine {
         );
 
         this.eraser = new Eraser(this.context, this.existingShapes);
+
 
         this.init().then(() => this.initHandlers());
         console.log('init');
@@ -305,13 +308,14 @@ export class CanvasEngine {
         this.y1 = event.clientY - rect.top;
 
         if (this.selectedTool === 'Text') {
-            console.log('you are in text down event');
             this.startTextInput(event.clientX, event.clientY);
             return;
         }
 
         if (this.selectedTool === 'Eraser') {
-            
+            this.isErasing = true;
+            this.eraseAtPoint(this.x1, this.y1);
+            return;
         }
         
         if (this.selectedTool === 'Freehand') {
@@ -570,6 +574,82 @@ export class CanvasEngine {
     public getSelectedShape(): Shape | null {
         return this.selectionManager.getSelectedShape();
     }
+
+    private eraseAtPoint(x: number, y: number): void {
+        if (!this.eraser) return;
+
+        // Make sure eraser has the latest shapes
+        this.eraser = new Eraser(this.context, this.existingShapes);
+        this.eraser.setEraserSize(this.eraserSize);
+
+        // Check each shape to see if it intersects with the eraser
+        const shapesToErase: Shape[] = [];
+        const remainingShapes: Shape[] = [];
+
+        this.existingShapes.forEach(shape => {
+        if (shape.type === 'Freehand' && shape.paths) {
+            // For freehand shapes, check if any point is within eraser radius
+            const isErased = shape.paths.some(point => {
+            const distance = Math.sqrt(
+                Math.pow(point[0] - x, 2) + Math.pow(point[1] - y, 2),
+            );
+            return distance <= this.eraserSize / 2;
+            });
+
+            if (isErased) {
+            shapesToErase.push(shape);
+            } else {
+            remainingShapes.push(shape);
+            }
+        } else if (shape.type === 'Text') {
+            // Check if the eraser point is within the text bounds
+            const isWithinText =
+            x >= shape.x1 && x <= shape.x2 && y >= shape.y1 && y <= shape.y2;
+
+            if (isWithinText) {
+            shapesToErase.push(shape);
+            } else {
+            remainingShapes.push(shape);
+            }
+        } else {
+            // For other shapes, use the existing eraser logic
+            const currentEraser = this.eraser;
+            if (currentEraser) {
+            const erasedShapes = currentEraser.erase(x, y);
+            const isErased = !erasedShapes.some(erased => erased.id === shape.id);
+
+            if (isErased) {
+                shapesToErase.push(shape);
+            } else {
+                remainingShapes.push(shape);
+            }
+            }
+        }
+        });
+
+        // Send erase messages for each erased shape
+        shapesToErase.forEach(shape => {
+        this.sendMessage({
+            type: 'canvas:erase',
+            room: this.roomId,
+            shapeId: shape.id,
+        });
+        });
+
+        // Update existing shapes
+        this.existingShapes = remainingShapes;
+
+        // Redraw canvas
+        this.clearCanvas();
+    }
+
+    public setEraserSize(size: number): void {
+        this.eraserSize = size;
+        if (this.eraser) {
+            this.eraser.setEraserSize(size);
+        }
+    }
+
 
 
 

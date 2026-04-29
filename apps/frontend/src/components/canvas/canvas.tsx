@@ -77,7 +77,6 @@ export default function Canvas({roomId} : {
         const handleSendMessage = (message: any) => {
             sendMessage(message);
         };
-
         const draw = new CanvasEngine(canvas, roomId, handleSendMessage);
         setCanvasEngine(draw);
             
