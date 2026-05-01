@@ -138,13 +138,33 @@ export default function Canvas({roomId} : {
             canvas.style.cursor = cursorStyles[selectedTool] || cursorStyles.default;
         }
     }, [selectedTool]);
+    
+    // Style properties update
+    useEffect(() => {
+        if (!canvasEngine) return;
+
+        canvasEngine.setStrokeColor(strokeColor);
+        canvasEngine.setFillColor(backgroundColor);
+        canvasEngine.setStrokeWidth(strokeWidth);
+        canvasEngine.setStrokeStyle(strokeStyle);
+        canvasEngine.setRoughness(roughness);
+        canvasEngine.setFillStyle(fillStyle);
+    }, [
+        canvasEngine,
+        strokeColor,
+        backgroundColor,
+        strokeWidth,
+        strokeStyle,
+        roughness,
+        fillStyle,
+    ]);
 
 
     return (
         <>            
             <CanvasHeader roomId={roomId} sendMessage={sendMessage} />
             <CanvasSidebar selectedTool={selectedTool} />
-            <canvas ref={canvasRef} className='bg-[#f6f6f6] text-white' />
+            <canvas ref={canvasRef} className='bg-[#f6f6f6] text-black' />
             <CanvasFooter />
         </>
     )

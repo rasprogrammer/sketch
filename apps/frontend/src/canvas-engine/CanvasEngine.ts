@@ -921,7 +921,7 @@ export class CanvasEngine {
    */
   private drawEraserCursor(x: number, y: number): void {
     this.context.save();
-    this.context.strokeStyle = 'white';
+    this.context.strokeStyle = 'black';
     this.context.lineWidth = 1;
     // this.context.setLineDash([3, 3]); // Make the cursor more visible
     this.context.beginPath();
