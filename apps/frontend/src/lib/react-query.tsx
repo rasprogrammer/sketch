@@ -3,7 +3,6 @@
 import {
   QueryClient,
   QueryClientProvider,
-  useQuery,
 } from '@tanstack/react-query'
 import { ReactNode, useState } from 'react'
 
