@@ -64,7 +64,7 @@ export const authorize = async (userData: {token: string}) => {
           }
         });
 
-        await new Promise(resolve => setTimeout(() => resolve, 300));
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
         return response.data;
     } catch (error) {
