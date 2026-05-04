@@ -23,7 +23,7 @@ interface CanvasStyleStore {
 
 export const useCanvasStyleStore = create<CanvasStyleStore>()(
   subscribeWithSelector(set => ({
-    strokeColor: 'white',
+    strokeColor: 'black',
     setStrokeColor: color => set({ strokeColor: color }),
     backgroundColor: 'transparent',
     setBackgroundColor: color => set({ backgroundColor: color }),

@@ -83,6 +83,8 @@ export class CanvasEngine {
   private isErasing: boolean = false;
   private eraserSize: number = 10;
 
+  private onToolChange?: (tool: Tool) => void;
+
   /**
    * Initializes the drawing engine with canvas and room context
    */
@@ -90,6 +92,7 @@ export class CanvasEngine {
     canvas: HTMLCanvasElement,
     roomId: string,
     sendMessage: (message: CanvasMessage) => void,
+    onToolChange?: (tool: Tool) => void
   ) {
     this.canvas = canvas;
     this.context = canvas.getContext('2d')!;
@@ -97,6 +100,7 @@ export class CanvasEngine {
     this.generator = rough.generator();
     this.roomId = roomId;
     this.sendMessage = sendMessage;
+    this.onToolChange = onToolChange;
 
     this.selectionManager = new SelectionManager(
       this.canvas,
@@ -310,6 +314,37 @@ export class CanvasEngine {
     }
   };
 
+  private selectShape() {
+    // Check if clicking on existing shape
+    const shape = this.selectionManager.getShapeAtPoint(
+      this.x1,
+      this.y1,
+      this.existingShapes,
+    );
+
+    // Get currently selected shape
+    const currentlySelected = this.selectionManager.getSelectedShape();
+
+    if (shape) {
+      // Only set as selected if it's a different shape than currently selected
+      if (!currentlySelected || currentlySelected.id !== shape.id) {
+        this.selectionManager.setSelectedShape(shape);
+      }
+
+      this.action = 'moving';
+      this.selectionManager.beginDrag();
+    } else {
+      // If not clicking on any shape, start marquee selection and clear current selection
+      this.action = 'marquee-selecting';
+      this.selectionManager.beginMarqueeSelection(this.x1, this.y1);
+
+      // Clear selection if clicking on empty space
+      if (currentlySelected) {
+        this.selectionManager.setSelectedShape(null);
+      }
+    }
+  }
+
   /**
    * Handles pointer move events for drawing, moving, and resizing
    */
@@ -426,6 +461,8 @@ export class CanvasEngine {
       this.x2 = event.clientX - rect.left;
       this.y2 = event.clientY - rect.top;
       this.drawShape();
+      this.onToolChange?.('Selection');
+      this.selectShape();
     } else if (this.action === 'moving') {
       this.selectionManager.getSelectedShape();
       this.selectionManager.endDrag();

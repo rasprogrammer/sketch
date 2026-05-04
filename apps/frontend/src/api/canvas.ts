@@ -4,13 +4,11 @@ import { getAuthHeaders } from './room';
 
 export const getExistingShapes = async (roomId: string) => {
   try {
-    console.log('before calling api ');
     const response = await axios.get(
       `${HTTP_URL}/canvas/get-canvas-design/${roomId}`,
       { headers: getAuthHeaders() },
     );
 
-    console.log('after calling api ');
     return response.data.Shapes;
   } catch (error: unknown) {
     console.log('error in api calling ');

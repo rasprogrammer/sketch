@@ -77,7 +77,12 @@ export default function Canvas({roomId} : {
         const handleSendMessage = (message: any) => {
             sendMessage(message);
         };
-        const draw = new CanvasEngine(canvas, roomId, handleSendMessage);
+        const draw = new CanvasEngine(
+            canvas, 
+            roomId, 
+            handleSendMessage,
+            (tool) => useToolStore.getState().setSelectedTool(tool),
+        );
         setCanvasEngine(draw);
             
         // Mouse event handlers with optimized state updates
@@ -107,10 +112,16 @@ export default function Canvas({roomId} : {
         if (!canvasEngine) return;
 
         const currentTool = canvasEngine.getSelectedTool();
+        console.log('canvasEngine.setSelectedTool(selectedTool) > ', canvasEngine.getSelectedTool()); 
         if (currentTool !== selectedTool) {
             canvasEngine.setSelectedTool(selectedTool);
         }
     }, [canvasEngine, selectedTool]);
+
+    useEffect(() => {
+        if (!canvasEngine) return;
+        console.log('ajdlsjadlflsadflsdf');
+    }, [canvasEngine?.getSelectedTool]);
 
     // Canvas sizing
     useEffect(() => {
