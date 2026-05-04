@@ -384,7 +384,7 @@ export class CanvasEngine {
     }
 
     // Update cursor style based on what's under the cursor
-    this.selectionManager.updateCursor(currentX, currentY);
+    // this.selectionManager.updateCursor(currentX, currentY);
 
     if (this.action === 'drawing') {
       this.x2 = currentX;

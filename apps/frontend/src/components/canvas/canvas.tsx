@@ -18,11 +18,11 @@ const cursorStyles = {
   Eraser: 'none',
   Freehand: 'crosshair',
   Text: 'text',
-  Selection: 'pointer',
+  Selection: 'default',
   Rectangle: 'crosshair',
   Diamond: 'crosshair',
   Ellipse: 'crosshair',
-  Arrow: 'default',
+  Arrow: 'crosshair',
   Line: 'crosshair',
   default: 'crosshair',
 };
@@ -118,10 +118,6 @@ export default function Canvas({roomId} : {
         }
     }, [canvasEngine, selectedTool]);
 
-    useEffect(() => {
-        if (!canvasEngine) return;
-        console.log('ajdlsjadlflsadflsdf');
-    }, [canvasEngine?.getSelectedTool]);
 
     // Canvas sizing
     useEffect(() => {
@@ -144,9 +140,11 @@ export default function Canvas({roomId} : {
     // Cursor style
     useEffect(() => {
         const canvas = canvasRef.current;
-        console.log('canvas > ', canvas);
+        console.log('cursorStyles > ', cursorStyles, ' selectedTool > ', selectedTool);
         if (canvas) {
+            console.log('canvas.style.cursor > ', canvas.style.cursor);
             canvas.style.cursor = cursorStyles[selectedTool] || cursorStyles.default;
+            console.log('canvas.style.cursor > ', canvas.style.cursor);
         }
     }, [selectedTool]);
     
